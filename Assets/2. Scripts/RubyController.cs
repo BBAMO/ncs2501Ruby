@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class RubyController : MonoBehaviour
 {
+    // 이동 속도 상수값 지정
     const float xs = 4.0f;
     const float ys = 4.0f;
     void Start()
