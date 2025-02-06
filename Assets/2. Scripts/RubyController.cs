@@ -4,12 +4,15 @@ using UnityEngine;
 
 public class RubyController : MonoBehaviour
 {
+    // 캐릭터의 지속 충돌 시 떨림 현상 방지를 위한 조치
+    private Rigidbody2D rb2d;
+
     // 이동 속도 상수값 지정
-    const float xs = 4.0f;
-    const float ys = 4.0f;
+    const float moveSpeed = 50.0f;
+    
     void Start()
     {
-        
+        rb2d = GetComponent<Rigidbody2D>(); // 캐릭터에 존재하는 Rigidbody2D를 달라고 요구
     }
 
 
@@ -23,9 +26,10 @@ public class RubyController : MonoBehaviour
         //Debug.Log($"H:{horizontal}");
         //Debug.Log($"V: {vertical}");
         
-        Vector2 position = transform.position;
-        position.x += xs * horizontal * Time.deltaTime;
-        position.y += ys * vertical * Time.deltaTime;
-        transform.position = position;
+        Vector2 position = rb2d.position;
+        position.x += moveSpeed * horizontal * Time.deltaTime;
+        position.y += moveSpeed * vertical * Time.deltaTime;
+        //transform.position = position; - 캐릭터의 지속 충돌 시 떨림 현상 방지를 위한 조치
+        rb2d.MovePosition(position);
     }
 }
