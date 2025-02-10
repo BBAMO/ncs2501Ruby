@@ -10,6 +10,11 @@ public class RubyController : MonoBehaviour
 
     public int maxHealth = 5;
     public int health { get { return currentHealth;}}
+    public float timeInvincible = 2.0f;
+
+    
+    private bool isInvincible;
+    private float invincibleTimer;
     private int currentHealth;
 
     // 캐릭터의 지속 충돌 시 떨림 현상 방지를 위한 조치
@@ -18,7 +23,7 @@ public class RubyController : MonoBehaviour
     void Start()
     {
         rb2d = GetComponent<Rigidbody2D>(); // 캐릭터에 존재하는 Rigidbody2D를 달라고 요구
-        currentHealth = 1; //maxHealth;
+        currentHealth = maxHealth;
     }
 
 
@@ -37,10 +42,26 @@ public class RubyController : MonoBehaviour
         position.y += moveSpeed * vertical * Time.deltaTime;
         //transform.position = position; - 캐릭터의 지속 충돌 시 떨림 현상 방지를 위한 조치
         rb2d.MovePosition(position);
+
+        if (isInvincible)
+        {
+            invincibleTimer -= Time.deltaTime;
+            if (invincibleTimer < 0)
+                isInvincible = false;
+        }
     }
 
+    
     public void ChangeHealth(int amount)
     {
+        if (amount < 0)
+        {
+            if (isInvincible)
+                return;
+
+            isInvincible = true;
+            invincibleTimer = timeInvincible;
+        }
         currentHealth = Mathf.Clamp(currentHealth + amount, 0 , maxHealth);
         Debug.Log($"{currentHealth} / {maxHealth}");
     }
