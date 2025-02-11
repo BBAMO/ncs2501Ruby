@@ -5,16 +5,21 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
-    public float moveSpeed = 10.0f;
+    public float moveSpeed = 4.0f;
     public bool vertical;
     public float changeTime = 3.0f;
+
     private Rigidbody2D rb2d;
     private float timer;
     private int direction = 1;
+    private Vector2 position;
+    private Animator animator;
     void Start()
     {
         rb2d = GetComponent<Rigidbody2D>();
         timer = changeTime;
+        position = rb2d.position;
+        animator = GetComponent<Animator>();
     }
 
     void Update()
@@ -25,15 +30,17 @@ public class EnemyController : MonoBehaviour
             direction = -direction;
             timer = changeTime;
         }
-
-        Vector2 position = rb2d.position;
         
         if (vertical)
         {
+            animator.SetFloat("MoveX", 0);
+            animator.SetFloat("MoveY", direction);
             position.y += moveSpeed * direction * Time.deltaTime;
         }
         else
         {
+            animator.SetFloat("MoveX", direction);
+            animator.SetFloat("MoveY", 0);
             position.x += moveSpeed * direction * Time.deltaTime;
         }
     

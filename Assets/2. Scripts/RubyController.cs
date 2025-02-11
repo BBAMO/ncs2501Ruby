@@ -6,7 +6,7 @@ using UnityEngine;
 public class RubyController : MonoBehaviour
 {
     // 이동 속도 상수값 지정
-    public float moveSpeed = 50.0f;
+    public float moveSpeed = 4.0f;
 
     public int maxHealth = 5;
     public int health { get { return currentHealth;}}
@@ -16,6 +16,9 @@ public class RubyController : MonoBehaviour
     private bool isInvincible;
     private float invincibleTimer;
     private int currentHealth;
+    private Vector2 position;
+    private Animator animator;
+    private Vector2 lookDirection = new Vector2(1,0);
 
     // 캐릭터의 지속 충돌 시 떨림 현상 방지를 위한 조치
     private Rigidbody2D rb2d;
@@ -24,6 +27,8 @@ public class RubyController : MonoBehaviour
     {
         rb2d = GetComponent<Rigidbody2D>(); // 캐릭터에 존재하는 Rigidbody2D를 달라고 요구
         currentHealth = maxHealth;
+        position = rb2d.position;
+        animator = GetComponent<Animator>();
     }
 
 
@@ -37,9 +42,21 @@ public class RubyController : MonoBehaviour
         //Debug.Log($"H:{horizontal}");
         //Debug.Log($"V: {vertical}");
         
-        Vector2 position = rb2d.position;
-        position.x += moveSpeed * horizontal * Time.deltaTime;
-        position.y += moveSpeed * vertical * Time.deltaTime;
+        Vector2 move = new Vector2(horizontal, vertical);
+        if (!Mathf.Approximately(move.x, 0.0f) || 
+            !Mathf.Approximately(move.y, 0.0f))
+            {
+                lookDirection.Set(move.x, move.y);
+                lookDirection.Normalize();
+            }
+        
+        animator.SetFloat("Look X", lookDirection.x);
+        animator.SetFloat("Look Y", lookDirection.y);
+        animator.SetFloat("Speed", move.magnitude);
+        //Vector2 position = rb2d.position;
+        //position.x += moveSpeed * horizontal * Time.deltaTime;
+        //position.y += moveSpeed * vertical * Time.deltaTime;
+        position += move * moveSpeed * Time.deltaTime;
         //transform.position = position; - 캐릭터의 지속 충돌 시 떨림 현상 방지를 위한 조치
         rb2d.MovePosition(position);
 
@@ -56,6 +73,7 @@ public class RubyController : MonoBehaviour
     {
         if (amount < 0)
         {
+            animator.SetTrigger("Hit");
             if (isInvincible)
                 return;
 
