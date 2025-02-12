@@ -5,12 +5,15 @@ using UnityEngine;
 
 public class RubyController : MonoBehaviour
 {
+    public const float FIXED_PT = 0.5f;
+    public const int FORCE_PT = 300;
     // 이동 속도 상수값 지정
     public float moveSpeed = 4.0f;
 
     public int maxHealth = 5;
     public int health { get { return currentHealth;}}
     public float timeInvincible = 2.0f;
+    public GameObject projectilePrefab;
 
     
     private bool isInvincible;
@@ -18,6 +21,7 @@ public class RubyController : MonoBehaviour
     private int currentHealth;
     private Vector2 position;
     private Animator animator;
+    
     private Vector2 lookDirection = new Vector2(1,0);
 
     // 캐릭터의 지속 충돌 시 떨림 현상 방지를 위한 조치
@@ -66,6 +70,11 @@ public class RubyController : MonoBehaviour
             if (invincibleTimer < 0)
                 isInvincible = false;
         }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Launch();
+        }
     }
 
     
@@ -82,5 +91,18 @@ public class RubyController : MonoBehaviour
         }
         currentHealth = Mathf.Clamp(currentHealth + amount, 0 , maxHealth);
         Debug.Log($"{currentHealth} / {maxHealth}");
+    }
+
+    private void Launch()
+    {
+        GameObject projectileObject = Instantiate(
+            projectilePrefab, 
+            rb2d.position + Vector2.up * FIXED_PT,
+            Quaternion.identity);
+        Projectile projectile = 
+            projectileObject.GetComponent<Projectile>();
+        projectile.Launch(lookDirection, FORCE_PT);
+
+        animator.SetTrigger("Launch");
     }
 }

@@ -8,23 +8,34 @@ public class EnemyController : MonoBehaviour
     public float moveSpeed = 4.0f;
     public bool vertical;
     public float changeTime = 3.0f;
+    public int needFix = 3;
 
     private Rigidbody2D rb2d;
     private float timer;
     private int direction = 1;
     private Vector2 position;
     private Animator animator;
+    private bool broken;
+    private int fixedCount;
     void Start()
     {
         rb2d = GetComponent<Rigidbody2D>();
         timer = changeTime;
         position = rb2d.position;
         animator = GetComponent<Animator>();
+        broken = true;
+        fixedCount = 0;
     }
 
     void Update()
     {
+        if (!broken)
+        {
+            return;
+        }
+
         timer -= Time.deltaTime;
+
         if (timer < 0)
         {
             direction = -direction;
@@ -54,6 +65,20 @@ public class EnemyController : MonoBehaviour
         if (player != null)
         {
             player.ChangeHealth(-1);
+        }
+    }
+
+    public void Fix()
+    {
+        if (fixedCount >= needFix)
+        {
+        broken = false;
+        rb2d.simulated = false;
+        animator.SetTrigger("Fixed");
+        }
+        else
+        {
+            fixedCount++;
         }
     }
 }
